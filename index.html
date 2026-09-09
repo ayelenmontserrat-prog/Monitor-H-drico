@@ -1,3 +1,4 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1"><style>:root{color-scheme:light}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found]){display:none!important}</style></head><body>
 <title>Monitor Hídrico — Altura de los Ríos</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -68,9 +69,6 @@ table.st td{padding:5px 12px;border-bottom:1px solid var(--border);vertical-alig
 table.st tr:last-child td{border-bottom:none;}
 table.st tr:hover td{background:var(--surf2);}
 table.st tr.alerted td{background:var(--alert-bg);}
-table.st tr.warned td{background:var(--crece-bg);}
-table.st tr.alerted:hover td{background:var(--alert-bg);filter:brightness(.97);}
-table.st tr.warned:hover td{background:var(--crece-bg);filter:brightness(.97);}
 table.st tr.alerted:hover td{background:var(--alert-bg);filter:brightness(.97);}
 .td-nm{font-family:var(--ff-cond);font-size:14px;font-weight:600;letter-spacing:.03em;}
 .td-sp{width:72px;padding:3px 12px;}
@@ -140,49 +138,60 @@ footer{text-align:center;padding:16px;font-size:11px;color:var(--ink3);}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script>
-const DATES = ['2026-08-03','2026-08-04','2026-08-05','2026-08-06','2026-08-07','2026-08-08','2026-08-09','2026-08-10','2026-08-11','2026-08-12','2026-08-13','2026-08-14','2026-08-15','2026-08-16','2026-08-17','2026-08-18','2026-08-19','2026-08-20','2026-08-21','2026-08-22','2026-08-23','2026-08-24','2026-08-25','2026-08-26','2026-08-27','2026-08-28','2026-08-29','2026-08-30','2026-08-31','2026-09-01','2026-09-02','2026-09-03','2026-09-04','2026-09-05','2026-09-06','2026-09-07','2026-09-08'];
-const DATE_LBL = ['3 ago','4 ago','5 ago','6 ago','7 ago','8 ago','9 ago','10 ago','11 ago','12 ago','13 ago','14 ago','15 ago','16 ago','17 ago','18 ago','19 ago','20 ago','21 ago','22 ago','23 ago','24 ago','25 ago','26 ago','27 ago','28 ago','29 ago','30 ago','31 ago','1 sep','2 sep','3 sep','4 sep','5 sep','6 sep','7 sep','8 sep'];
+const DATES = ['2026-08-02','2026-08-03','2026-08-04','2026-08-05','2026-08-06','2026-08-07','2026-08-08','2026-08-09','2026-08-10','2026-08-11','2026-08-12','2026-08-13','2026-08-14','2026-08-15','2026-08-16','2026-08-17','2026-08-18','2026-08-19','2026-08-20','2026-08-21','2026-08-22','2026-08-23','2026-08-24','2026-08-25','2026-08-26','2026-08-27','2026-08-28','2026-08-29','2026-08-30','2026-08-31','2026-09-01','2026-09-02','2026-09-03','2026-09-04','2026-09-05','2026-09-06','2026-09-07','2026-09-08','2026-09-09'];
+const DATE_LBL = ['2 ago','3 ago','4 ago','5 ago','6 ago','7 ago','8 ago','9 ago','10 ago','11 ago','12 ago','13 ago','14 ago','15 ago','16 ago','17 ago','18 ago','19 ago','20 ago','21 ago','22 ago','23 ago','24 ago','25 ago','26 ago','27 ago','28 ago','29 ago','30 ago','31 ago','1 sep','2 sep','3 sep','4 sep','5 sep','6 sep','7 sep','8 sep','9 sep'];
+
 const N36 = Array(36).fill(null);
+
 const RIVERS = [
-  { id:'iguazu', name:'Río Iguazú', cv:'--iguazu', stations:[
-    {n:'ANDRESITO', al:10.5, ev:13.5, r:[0.76,1.42,1.48,0.98,2.02,2.88,190,1.44,2.26,2.2,158,1.36,1.59,2.12,2.48,181,1.5,2.42,1.67,124,0.84,0.88,1.04,1.06,3.46,2.44,1.58,0.98,0.78,1.46,4.8,4.58,3.82,3.58,3.88,2.0,1.88]},
-    {n:'IGUAZÚ', al:25, ev:28, r:[10.9,11.3,11.9,11.7,12.1,14.4,12.0,11.5,11.5,12.9,13.2,12.5,12.3,11.5,11.2,13.4,13.4,13.5,13.9,11.9,10.5,9.3,9.2,9.8,10.5,14.0,13.0,10.7,9.4,10.4,12.6,18.2,16.6,16.60,15.60,13.0,12.6]},
-  ]},
-  { id:'parana', name:'Río Paraná', cv:'--parana', stations:[
-    {n:'LIBERTAD', al:29, ev:31, r:[11.8,11.6,12.4,12.4,11.9,13.6,13.0,12.8,12.0,13.2,13.9,13.3,12.3,11.9,12.0,13.8,13.8,13.6,13.9,12.8,11.2,10.0,9.2,10.6,11.0,13.1,13.4,12.5,10.3,10.5,10.8,15.6,16.6,16.00,15.70,14.1,13.7]},
-    {n:'ELDORADO', al:23, ev:25, r:[8.55,8.6,8.75,8.8,8.95,10.4,9.85,9.5,8.93,9.6,9.8,9.55,9.2,8.7,8.95,9.5,9.8,9.8,10.0,9.55,8.39,7.4,7.3,7.6,8.0,9.55,9.5,8.5,7.7,8.0,8.9,12.1,12.5,11.75,11.25,9.7,9.25]},
-    {n:'LIBERTADOR', al:14.5, ev:15.5, r:[7.65,7.55,7.6,7.73,7.78,8.63,8.35,7.94,7.69,8.05,8.28,8.1,7.92,7.62,7.6,8.06,8.27,8.18,8.5,8.14,7.58,7.04,6.86,6.9,7.05,7.93,8.0,7.51,7.06,7.25,7.35,7.78,8.71,9.26,8.95,8.53,7.87]},
-    {n:'POSADAS', al:11, ev:12, r:[10.31,10.25,10.16,10.12,10.18,10.12,10.08,10.08,9.92,9.93,9.98,10.04,10.07,10.12,10.24,10.27,10.16,10.18,10.19,10.22,10.19,10.15,9.98,9.88,9.84,9.83,9.88,10.0,10.02,10.05,10.0,9.96,10.11,10.17,10.19,10.16,10.11]},
-    {n:'ITUZAINGÓ', al:3.5, ev:4, r:[1.4,1.6,1.6,1.7,1.45,1.7,1.75,1.75,1.75,1.75,1.7,1.3,1.55,1.4,1.15,1.6,1.75,1.75,1.5,1.55,1.3,1.3,1.5,1.15,1.25,1.6,1.6,1.1,1.1,1.3,1.7,1.65,1.75,1.75,1.75,1.75,1.6]},
-    {n:'ITÁ IBATÉ', al:7, ev:7.5, r:[1.82,2.0,2.24,2.1,2.0,2.2,2.35,2.45,2.45,2.22,2.2,2.0,2.0,1.9,1.5,1.3,2.15,2.4,2.3,2.05,2.13,1.85,1.86,1.98,1.65,1.7,1.9,1.84,1.56,1.46,1.74,2.25,2.45,2.60,2.65,2.7,2.45]},
-    {n:'ITATÍ', al:6.8, ev:7.5, r:[3.42,3.16,3.34,3.4,3.3,3.18,3.48,3.56,3.6,3.6,3.5,3.34,3.25,3.2,2.98,2.63,2.7,3.28,3.52,3.39,3.3,3.22,2.99,3.05,2.96,2.76,2.86,3.03,2.88,2.63,2.63,2.92,3.3,3.54,3.71,3.8,3.78]},
-    {n:'P. DE PATRIA', al:6.5, ev:7, r:[3.37,3.2,3.17,3.27,3.19,3.12,3.2,3.2,3.43,3.43,3.38,3.28,3.12,3.09,2.98,2.74,2.54,2.82,3.17,3.25,3.11,3.1,2.93,2.87,2.84,2.68,2.54,2.72,2.7,2.52,2.4,2.4,2.85,3.10,3.33,3.4,3.44]},
-    {n:'CORRIENTES', al:6.5, ev:7, r:[3.42,3.21,3.17,3.23,3.21,3.1,3.18,3.22,3.35,3.36,3.28,3.2,3.09,3.02,2.92,2.64,2.5,2.79,3.0,3.17,3.08,3.03,2.88,2.79,2.78,2.65,2.56,2.65,2.66,2.52,2.37,2.38,2.73,2.97,3.16,3.28,3.34]},
-    {n:'BARRANQUERAS', al:6, ev:6.5, r:[3.39,3.22,3.14,3.21,3.18,3.1,3.15,3.2,3.33,3.37,3.29,3.2,3.11,3.02,2.9,2.66,2.5,2.75,3.05,3.19,3.1,3.05,2.9,2.78,2.77,2.65,2.54,2.62,2.64,2.51,2.36,2.4,2.7,2.92,3.14,3.26,3.32]},
-    {n:'EMPEDRADO', al:6.5, ev:7, r:[3.29,3.2,2.99,2.99,3.0,3.0,2.92,3.0,3.06,3.16,3.16,3.1,2.94,2.87,2.87,2.6,2.39,2.3,2.65,2.95,3.0,2.95,2.95,2.65,2.64,2.58,2.58,2.42,2.5,2.45,2.45,2.28,2.28,2.52,2.85,3.02,3.14]},
-    {n:'GOYA', al:5.2, ev:5.7, r:[3.75,3.64,3.53,3.39,3.33,3.3,3.22,3.2,3.18,3.29,3.38,3.4,3.33,3.28,3.2,3.13,2.99,2.89,2.79,2.92,3.15,3.2,3.16,3.11,2.99,2.96,2.87,2.8,2.77,2.79,2.76,2.68,2.57,2.65,2.80,3.0,3.17]},
-    {n:'RECONQUISTA', al:5.1, ev:5.3, r:[3.42,3.36,3.24,3.11,3.06,3.0,2.95,2.93,2.9,2.95,3.02,3.06,3.04,3.0,2.94,2.86,2.78,2.62,2.54,2.64,2.79,2.87,2.88,2.84,2.77,2.71,2.66,2.55,2.5,2.49,2.48,2.42,2.35,2.33,2.48,2.64,2.78]},
-  ]},
-  { id:'paraguay', name:'Río Paraguay', cv:'--paraguay', stations:[
-    {n:'PILCOMAYO', al:5.35, ev:6, r:[2.3,2.29,2.29,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2.02,2.02,2.01,2.0,2.0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
-    {n:'FORMOSA', al:7.8, ev:8.3, r:[3.49,3.41,3.39,3.34,3.3,3.29,3.18,3.16,3.12,3.11,3.08,3.05,3.02,3.01,2.96,2.92,2.84,2.8,2.79,2.77,2.75,2.72,2.65,2.58,2.51,2.44,2.38,2.3,2.25,2.21,2.16,2.10,2.05,2.03,2.01,2.0,2]},
-    {n:'LAS PALMAS', al:6.5, ev:7, r:[3.42,3.26,3.16,3.2,3.25,3.15,3.1,3.2,3.26,3.32,3.29,3.19,3.15,3.05,2.98,2.78,2.65,2.8,3.0,3.12,3.05,3.05,2.9,2.76,2.73,2.6,2.5,2.6,2.62,2.5,2.5,2.25,2.27,2.70,2.90,3.02,3.05]},
-    {n:'CERRITO', al:6.2, ev:6.8, r:[3.68,3.47,3.46,3.53,3.49,3.39,3.5,3.56,3.66,3.67,3.61,3.51,3.4,3.34,3.18,2.95,2.83,3.17,3.45,3.49,3.39,3.33,3.18,3.09,3.09,2.92,2.85,2.96,2.92,2.78,2.68,2.77,3.07,3.27,3.48,3.62,3.66]},
-  ]},
-  { id:'bermejo', name:'Río Bermejo (COREBE)', cv:'--bermejo', corebe:true, stations:[
-    {n:'BALAPUCA', al:null, ev:null, r:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2.27,2.27,2.26,2.25,2.26,2.27]},
-    {n:'AGUAS BLANCAS', al:null, ev:null, r:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.45,1.45,1.45,1.44,1.44,1.44]},
-    {n:'POZO SARMIENTO', al:null, ev:null, r:[0.31,0.3,0.16,0.16,0.14,0.17,0.16,0.15,0.14,0.14,0.14,0.13,null,0.12,0.11,0.15,0.27,0.65,null,0.31,0.26,0.22,0.19,0.18,0.14,0.12,0.22,0.21,0.22,0.09,null,0.08,0.08,0.09,0.07,0.07,0.04]},
-    {n:'EMBARCACIÓN', al:null, ev:null, r:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.53,0.54,0.61,0.81,0.85,0.77,0.71,0.66,0.62,0.6,0.58,0.56,0.55,0.53,0.54,0.53,null,0.52,0.51,0.50,0.50,0.50,0.5]},
-    {n:'CAIMANCITO', al:null, ev:null, r:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,1.26,1.26,1.22,1.23,1.23,1.27]},
-    {n:'PTO. LAVALLE', al:null, ev:null, r:[1.34,1.33,1.31,1.29,1.26,1.22,1.19,1.17,1.16,1.14,1.13,1.11,null,1.08,1.06,1.04,1.03,1.06,1.06,1.06,1.05,1.05,1.08,1.09,1.35,1.41,1.38,1.28,1.19,1.11,null,1.02,0.99,0.96,0.94,0.91,0.9]},
-    {n:'EL COLORADO', al:null, ev:null, r:[3.15,3.1,3.06,3.06,3.05,3.02,2.97,2.93,2.89,2.87,2.85,2.83,null,2.79,2.78,2.76,2.77,2.82,2.79,2.75,2.74,2.74,2.74,2.74,2.75,2.83,2.95,3.03,3.01,2.97,null,2.85,2.79,2.76,2.71,2.68,2.65]},
-    {n:'GRAL. MANSILLA', al:null, ev:null, r:[4.04,4.09,4.08,4.05,null,4.0,3.96,3.91,null,null,null,null,null,3.78,3.75,null,null,null,null,3.77,3.72,3.74,3.69,3.68,3.69,3.69,3.74,3.89,3.92,null,null,3.81,3.74,3.68,3.65,null,3.6]},
-  ]},
+  { id:'iguazu', name:'Río Iguazú', cv:'--iguazu',
+    stations:[
+      {n:'ANDRESITO', r:[1.52,0.76,1.42,1.48,0.98,2.02,2.88,1.9,1.44,2.26,2.2,1.58,1.36,1.59,2.12,2.48,1.81,1.5,2.42,1.67,1.24,0.84,0.88,1.04,1.06,3.46,2.44,1.58,0.98,0.78,1.46,4.8,4.58,3.82,3.58,3.88,2.0,1.88,2.38]},
+      {n:'IGUAZÚ', r:[12.7,10.9,11.3,11.9,11.7,12.1,14.4,12.0,11.5,11.5,12.9,13.2,12.5,12.3,11.5,11.2,13.4,13.4,13.5,13.9,11.9,10.5,9.3,9.2,9.8,10.5,14.0,13.0,10.7,9.4,10.4,12.6,18.2,16.6,16.60,15.60,13.0,12.6,12.8]},
+    ]
+  },
+  { id:'parana', name:'Río Paraná', cv:'--parana',
+    stations:[
+      {n:'LIBERTAD', r:[13.3,11.8,11.6,12.4,12.4,11.9,13.6,13.0,12.8,12.0,13.2,13.9,13.3,12.3,11.9,12.0,13.8,13.8,13.6,13.9,12.8,11.2,10.0,9.2,10.6,11.0,13.1,13.4,12.5,10.3,10.5,10.8,15.6,16.6,16.00,15.70,14.1,13.7,12.9]},
+      {n:'ELDORADO', r:[9.75,8.55,8.6,8.75,8.8,8.95,10.4,9.85,9.5,8.93,9.6,9.8,9.55,9.2,8.7,8.95,9.5,9.8,9.8,10.0,9.55,8.39,7.4,7.3,7.6,8.0,9.55,9.5,8.5,7.7,8.0,8.9,12.1,12.5,11.75,11.25,9.7,9.25,9.25]},
+      {n:'LIBERTADOR', r:[8.38,7.65,7.55,7.6,7.73,7.78,8.63,8.35,7.94,7.69,8.05,8.28,8.1,7.92,7.62,7.6,8.06,8.27,8.18,8.5,8.14,7.58,7.04,6.86,6.9,7.05,7.93,8.0,7.51,7.06,7.25,7.35,7.78,8.71,9.26,8.95,8.53,7.87,7.48]},
+      {n:'POSADAS', r:[10.24,10.31,10.25,10.16,10.12,10.18,10.12,10.08,10.08,9.92,9.93,9.98,10.04,10.07,10.12,10.24,10.27,10.16,10.18,10.19,10.22,10.19,10.15,9.98,9.88,9.84,9.83,9.88,10.0,10.02,10.05,10.0,9.96,10.11,10.17,10.19,10.16,10.11,10.08]},
+      {n:'ITUZAINGÓ', r:[1.75,1.4,1.6,1.6,1.7,1.45,1.7,1.75,1.75,1.75,1.75,1.7,1.3,1.55,1.4,1.15,1.6,1.75,1.75,1.5,1.55,1.3,1.3,1.5,1.15,1.25,1.6,1.6,1.1,1.1,1.3,1.7,1.65,1.75,1.75,1.75,1.75,1.6,1.6]},
+      {n:'ITÁ IBATÉ', r:[2.0,1.82,2.0,2.24,2.1,2.0,2.2,2.35,2.45,2.45,2.22,2.2,2.0,2.0,1.9,1.5,1.3,2.15,2.4,2.3,2.05,2.13,1.85,1.86,1.98,1.65,1.7,1.9,1.84,1.56,1.46,1.74,2.25,2.45,2.60,2.65,2.7,2.45,2.3]},
+      {n:'ITATÍ', r:[3.64,3.42,3.16,3.34,3.4,3.3,3.18,3.48,3.56,3.6,3.6,3.5,3.34,3.25,3.2,2.98,2.63,2.7,3.28,3.52,3.39,3.3,3.22,2.99,3.05,2.96,2.76,2.86,3.03,2.88,2.63,2.63,2.92,3.3,3.54,3.71,3.8,3.78,3.6]},
+      {n:'P. DE PATRIA', r:[3.68,3.37,3.2,3.17,3.27,3.19,3.12,3.2,3.2,3.43,3.43,3.38,3.28,3.12,3.09,2.98,2.74,2.54,2.82,3.17,3.25,3.11,3.1,2.93,2.87,2.84,2.68,2.54,2.72,2.7,2.52,2.4,2.4,2.85,3.10,3.33,3.4,3.44,3.33]},
+      {n:'CORRIENTES', r:[3.62,3.42,3.21,3.17,3.23,3.21,3.1,3.18,3.22,3.35,3.36,3.28,3.2,3.09,3.02,2.92,2.64,2.5,2.79,3.0,3.17,3.08,3.03,2.88,2.79,2.78,2.65,2.56,2.65,2.66,2.52,2.37,2.38,2.73,2.97,3.16,3.28,3.34,3.28]},
+      {n:'BARRANQUERAS', r:[3.62,3.39,3.22,3.14,3.21,3.18,3.1,3.15,3.2,3.33,3.37,3.29,3.2,3.11,3.02,2.9,2.66,2.5,2.75,3.05,3.19,3.1,3.05,2.9,2.78,2.77,2.65,2.54,2.62,2.64,2.51,2.36,2.4,2.7,2.92,3.14,3.26,3.32,3.29]},
+      {n:'EMPEDRADO', r:[3.55,3.29,3.2,2.99,2.99,3.0,3.0,2.92,3.0,3.06,3.16,3.16,3.1,2.94,2.87,2.87,2.6,2.39,2.3,2.65,2.95,3.0,2.95,2.95,2.65,2.64,2.58,2.58,2.42,2.5,2.45,2.45,2.28,2.28,2.52,2.85,3.02,3.14,3.1]},
+      {n:'GOYA', r:[3.8,3.75,3.64,3.53,3.39,3.33,3.3,3.22,3.2,3.18,3.29,3.38,3.4,3.33,3.28,3.2,3.13,2.99,2.89,2.79,2.92,3.15,3.2,3.16,3.11,2.99,2.96,2.87,2.8,2.77,2.79,2.76,2.68,2.57,2.65,2.80,3.0,3.17,3.25]},
+      {n:'RECONQUISTA', r:[3.44,3.42,3.36,3.24,3.11,3.06,3.0,2.95,2.93,2.9,2.95,3.02,3.06,3.04,3.0,2.94,2.86,2.78,2.62,2.54,2.64,2.79,2.87,2.88,2.84,2.77,2.71,2.66,2.55,2.5,2.49,2.48,2.42,2.35,2.33,2.48,2.64,2.78,2.91]},
+    ]
+  },
+  { id:'paraguay', name:'Río Paraguay', cv:'--paraguay',
+    stations:[
+      {n:'PILCOMAYO', r:[2.31,2.3,2.29,2.29,null,null,null,null,null,null,null,null,null,null,null,null,null,null,2.02,2.02,2.01,2.0,2.0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]},
+      {n:'FORMOSA', r:[3.55,3.49,3.41,3.39,3.34,3.3,3.29,3.18,3.16,3.12,3.11,3.08,3.05,3.02,3.01,2.96,2.92,2.84,2.8,2.79,2.77,2.75,2.72,2.65,2.58,2.51,2.44,2.38,2.3,2.25,2.21,2.16,2.10,2.05,2.03,2.01,2.0,2.0,2.0]},
+      {n:'LAS PALMAS', r:[3.55,3.42,3.26,3.16,3.2,3.25,3.15,3.1,3.2,3.26,3.32,3.29,3.19,3.15,3.05,2.98,2.78,2.65,2.8,3.0,3.12,3.05,3.05,2.9,2.76,2.73,2.6,2.5,2.6,2.62,2.5,2.5,2.25,2.27,2.70,2.90,3.02,3.05,2.98]},
+      {n:'CERRITO', r:[3.9,3.68,3.47,3.46,3.53,3.49,3.39,3.5,3.56,3.66,3.67,3.61,3.51,3.4,3.34,3.18,2.95,2.83,3.17,3.45,3.49,3.39,3.33,3.18,3.09,3.09,2.92,2.85,2.96,2.92,2.78,2.68,2.77,3.07,3.27,3.48,3.62,3.66,3.57]},
+    ]
+  },
+  { id:'bermejo', name:'Río Bermejo (COREBE)', cv:'--bermejo',
+    corebe: true,
+    stations:[
+      {n:'BALAPUCA',      r:[...N36,2.25,2.27,2.26]},
+      {n:'AGUAS BLANCAS', r:[...N36,1.44,1.44,1.44]},
+      {n:'POZO SARMIENTO',r:[0.33,0.31,0.3,0.16,0.16,0.14,0.17,0.16,0.15,0.14,0.14,0.14,0.13,null,0.12,0.11,0.15,0.27,0.65,null,0.31,0.26,0.22,0.19,0.18,0.14,0.12,0.22,0.21,0.22,0.09,null,0.08,null,null,null,0.07,0.04,0.04]},
+      {n:'EMBARCACIÓN',   r:[null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0.53,0.54,0.61,0.81,0.85,0.77,0.71,0.66,0.62,0.6,0.58,0.56,0.55,0.53,0.54,0.53,null,0.52,null,null,null,0.50,0.50,0.50]},
+      {n:'CAIMANCITO',    r:[...N36,1.23,1.27,1.26]},
+      {n:'PTO. LAVALLE',  r:[1.35,1.34,1.33,1.31,1.29,1.26,1.22,1.19,1.17,1.16,1.14,1.13,1.11,null,1.08,1.06,1.04,1.03,1.06,1.06,1.06,1.05,1.05,1.08,1.09,1.35,1.41,1.38,1.28,1.19,1.11,null,1.02,null,null,null,0.91,0.90,0.87]},
+      {n:'EL COLORADO',   r:[3.11,3.15,3.1,3.06,3.06,3.05,3.02,2.97,2.93,2.89,2.87,2.85,2.83,null,2.79,2.78,2.76,2.77,2.82,2.79,2.75,2.74,2.74,2.74,2.74,2.75,2.83,2.95,3.03,3.01,2.97,null,2.85,null,null,null,2.68,2.65,2.63]},
+      {n:'GRAL. MANSILLA',r:[4.06,4.04,4.09,4.08,4.05,null,4.0,3.96,3.91,null,null,null,null,null,3.78,3.75,null,null,null,null,3.77,3.72,3.74,3.69,3.68,3.69,3.69,3.74,3.89,3.92,null,null,3.86,null,null,null,3.65,3.60,null]},
+    ]
+  },
 ];
 
 const CS = name => getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-function fmt(v){ return v===null||v===undefined ? 'S/D' : v.toFixed(2); }
+function fmt(v){ return v===null ? 'S/D' : v.toFixed(2); }
 function fmtISO(iso){
   const [y,m,d] = iso.split('-');
   const M=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
@@ -237,24 +246,15 @@ function spark(r, color){
 }
 function renderAlerts(){
   const el=document.getElementById('js-alerts');
-  const evacs=[],alerts=[],bigVars=[];
+  const hits=[];
   for(const rv of RIVERS) for(const s of rv.stations){
-    const cur=lastTwo(s.r)[1];
     const v=var24(s.r);
-    if(s.ev!==null&&cur!==null&&cur>=s.ev) evacs.push({n:s.n,cur,ev:s.ev});
-    else if(s.al!==null&&cur!==null&&cur>=s.al) alerts.push({n:s.n,cur,al:s.al});
-    else if(v!==null&&Math.abs(v)>=1) bigVars.push({n:s.n,v});
+    if(v!==null&&Math.abs(v)>=1) hits.push({n:s.n,v});
   }
-  if(!evacs.length&&!alerts.length&&!bigVars.length){el.hidden=true;return;}
+  if(!hits.length){el.hidden=true;return;}
   el.hidden=false;
-  let html='';
-  if(evacs.length) html+='<span class="alert-lbl" style="color:#8B0000">🚨 EVACUACIÓN</span>'+
-    evacs.map(h=>`<span class="alert-pill" style="border-color:#8B0000;color:#8B0000">${h.n} ${h.cur.toFixed(2)} m (evac: ${h.ev} m)</span>`).join('');
-  if(alerts.length) html+=(html?'&nbsp;&nbsp;':'')+'<span class="alert-lbl">⚠ ALERTA</span>'+
-    alerts.map(h=>`<span class="alert-pill">${h.n} ${h.cur.toFixed(2)} m (alerta: ${h.al} m)</span>`).join('');
-  if(bigVars.length) html+=(html?'&nbsp;&nbsp;':'')+'<span class="alert-lbl">↕ Var &gt;1 m/24h</span>'+
-    bigVars.map(h=>`<span class="alert-pill">${h.n} ${h.v>0?'+':''}${h.v.toFixed(2)} m</span>`).join('');
-  el.innerHTML=html;
+  el.innerHTML='<span class="alert-lbl">⚠ Variación &gt;1 m en 24 h</span>'+
+    hits.map(h=>`<span class="alert-pill">${h.n} ${h.v>0?'+':''}${h.v.toFixed(2)} m</span>`).join('');
 }
 function renderStats(){
   let T=0,U=0,D=0,E=0,N=0;
@@ -280,30 +280,17 @@ function renderRivers(){
     let rows='';
     for(const s of rv.stations){
       const t=tc(s.r), v=var24(s.r);
-      const cur=lastTwo(s.r)[1];
-      const aboveEvac=s.ev!==null&&cur!==null&&cur>=s.ev;
-      const aboveAlert=s.al!==null&&cur!==null&&cur>=s.al;
-      const nearAlert=!aboveAlert&&s.al!==null&&cur!==null&&cur>=s.al*0.9;
-      const bigVar=v!==null&&Math.abs(v)>=1;
-      const isAl=aboveAlert||aboveEvac;
+      const isAl=v!==null&&Math.abs(v)>=1;
       const vStr=v===null?'—':(v>=0?'+':'')+v.toFixed(2)+' m';
       const vCls=isAl?'va':v===null?'nd':v>0?'vu':v<0?'vd':'ve';
       const tlbl={C:'CRECE',B:'BAJA',E:'ESTABLE',nd:'S/D'}[t];
       const tblVals=tblIdx.map(i=>s.r[i]);
-      const rowCls=aboveEvac||aboveAlert?'alerted':nearAlert||bigVar?'warned':'';
-      const alTd=s.al!==null
-        ? `<td class="td-num ${aboveEvac||aboveAlert?'va':''}">${s.al.toFixed(2)}</td>`
-        : `<td class="td-num nd">—</td>`;
-      const evTd=s.ev!==null
-        ? `<td class="td-num ${aboveEvac?'va':''}">${s.ev.toFixed(2)}</td>`
-        : `<td class="td-num nd">—</td>`;
-      rows+=`<tr class="${rowCls}">
+      rows+=`<tr class="${isAl?'alerted':''}">
         <td class="td-nm">${s.n}</td>
         <td class="td-sp">${spark(s.r,col)}</td>
         ${tblVals.map(v=>`<td class="td-num ${v===null?'nd':''}">${fmt(v)}</td>`).join('')}
         <td class="td-var ${vCls}">${vStr}</td>
         <td class="td-badge"><span class="badge b${t}">${tlbl}</span></td>
-        ${alTd}${evTd}
       </tr>`;
     }
     const el=document.createElement('div');
@@ -317,7 +304,7 @@ function renderRivers(){
         <thead><tr>
           <th>Hidrómetro</th><th class="c">Evolución</th>
           ${dlbls.map(l=>`<th class="r">${l}</th>`).join('')}
-          <th class="r">Var 24h</th><th class="c">Estado</th><th class="r">Alerta</th><th class="r">Evacuac.</th>
+          <th class="r">Var 24h</th><th class="c">Estado</th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table></div>`;
@@ -445,3 +432,5 @@ function renderHistorical() {
 function renderDate(){document.getElementById('js-date').textContent=fmtISO(DATES[DATES.length-1]);}
 renderDate();renderAlerts();renderStats();renderRivers();renderHistorical();renderToggles();buildChart();renderRecords();
 </script>
+
+</body></html>
